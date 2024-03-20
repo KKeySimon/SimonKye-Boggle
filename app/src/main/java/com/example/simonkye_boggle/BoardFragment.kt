@@ -5,14 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.simonkye_boggle.databinding.FragmentBoggleBoardBinding
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 class BoardFragment : Fragment() {
     private var _binding: FragmentBoggleBoardBinding? = null
     private lateinit var buttonArray: Array<Array<Button>>
     private var prevButton: Button? = null
     private val currWord = mutableListOf<Char>()
+    private val generatedWords = mutableSetOf<String>()
 
     private val binding
         get() = checkNotNull(_binding) {
@@ -33,14 +37,13 @@ class BoardFragment : Fragment() {
                 arrayOf(button13, button14, button15, button16)
             )
             clearButton.setOnClickListener {
-                buttonArray.forEach { row ->
-                    row.forEach { button ->
-                        button.isEnabled = true
-                    }
+                clear()
+            }
+            submitButton.setOnClickListener {
+                if (checkAnswer()) {
+                    Toast.makeText(requireContext(), "Correct!", Toast.LENGTH_SHORT).show()
                 }
-                prevButton = null
-                currWord.clear()
-                binding.currentText.text = currWord.toString()
+                clear()
             }
         }
 
@@ -82,6 +85,47 @@ class BoardFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    private fun clear() {
+        buttonArray.forEach { row ->
+            row.forEach { button ->
+                button.isEnabled = true
+            }
+        }
+        prevButton = null
+        currWord.clear()
+        binding.currentText.text = currWord.toString()
+    }
+    private fun checkAnswer() : Boolean {
+        val inputStream = requireContext().assets.open("words.txt")
+        val reader = BufferedReader(InputStreamReader(inputStream))
+        val words = reader.readLines().map { it.uppercase() }
+        val inputWord = currWord.joinToString("")
+        if (words.contains(inputWord)) {
+            if (!generatedWords.contains(inputWord)) {
+                val vowels = setOf('A', 'E', 'I', 'O', 'U')
+                if (inputWord.count {it in vowels} >= 2) {
+                    if (inputWord.length >= 4) {
+                        generatedWords.add(inputWord)
+                        return true
+                    } else {
+                        Toast.makeText(requireContext(), "Incorrect! (Isn't longer than 4 characters)", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+
+                } else {
+                    Toast.makeText(requireContext(), "Incorrect! (Doesn't contain more than 2 vowels)", Toast.LENGTH_SHORT).show()
+                    return false
+                }
+            } else {
+                Toast.makeText(requireContext(), "Incorrect! (You already guessed this word)", Toast.LENGTH_SHORT).show()
+                return false
+            }
+        } else {
+            Toast.makeText(requireContext(), "Incorrect! (Not a valid word)", Toast.LENGTH_SHORT).show()
+            return false
+        }
     }
 
     private fun getButtonRow(button: Button?) : Int {
