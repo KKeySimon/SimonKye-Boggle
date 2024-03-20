@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.example.simonkye_boggle.databinding.FragmentBoggleBoardBinding
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -29,6 +30,7 @@ class BoardFragment : Fragment() {
     ): View? {
         _binding =
             FragmentBoggleBoardBinding.inflate(layoutInflater, container, false)
+        val sharedViewModel : SharedViewModel by activityViewModels()
         binding.apply {
             buttonArray = arrayOf(
                 arrayOf(button1, button2, button3, button4),
@@ -41,7 +43,10 @@ class BoardFragment : Fragment() {
             }
             submitButton.setOnClickListener {
                 if (checkAnswer()) {
+                    sharedViewModel.setWord(currWord.joinToString(""))
                     Toast.makeText(requireContext(), "Correct!", Toast.LENGTH_SHORT).show()
+                } else {
+                    sharedViewModel.setWord("-1")
                 }
                 clear()
             }
