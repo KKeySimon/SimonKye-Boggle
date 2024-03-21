@@ -31,13 +31,6 @@ class MenuFragment : Fragment() {
             scoreTextView = scoreText
         }
         val sharedViewModel : SharedViewModel by activityViewModels()
-        sharedViewModel.word.observe(viewLifecycleOwner) { word ->
-            if (word != "-1") {
-                Toast.makeText(requireContext(), "Received word: $word", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(requireContext(), "Deducting Points", Toast.LENGTH_SHORT).show()
-            }
-        }
         sharedViewModel.score.observe(viewLifecycleOwner) { score ->
             scoreTextView.text = getString(R.string.score, score)
         }

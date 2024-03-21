@@ -44,15 +44,18 @@ class BoardFragment : Fragment() {
             }
             submitButton.setOnClickListener {
                 val s = currWord.joinToString("")
-                if (checkAnswer()) {
-                    sharedViewModel.setWord(s)
+                val (scoreChange, isCorrect) = if (checkAnswer()) {
                     sharedViewModel.updateScore(s, true)
-                    Toast.makeText(requireContext(), "Correct!", Toast.LENGTH_SHORT).show()
                 } else {
-                    sharedViewModel.setWord("-1")
-                    sharedViewModel.updateScore("-1", false)
+                    sharedViewModel.updateScore(s, false)
+                }
+                if (isCorrect) {
+                    Toast.makeText(requireContext(), "That's correct, +$scoreChange", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(requireContext(), "That's incorrect, $scoreChange", Toast.LENGTH_SHORT).show()
                 }
                 clear()
+
             }
         }
 
@@ -116,6 +119,8 @@ class BoardFragment : Fragment() {
 
                             prevButton = button
                             button.isEnabled = false
+                        } else {
+                            Toast.makeText(requireContext(), getString(R.string.not_connected), Toast.LENGTH_SHORT).show()
                         }
                     }
                 }

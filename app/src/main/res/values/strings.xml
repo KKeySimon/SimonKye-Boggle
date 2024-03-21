@@ -5,4 +5,9 @@
     <string name="incorrect_vowels">Incorrect! (Doesn\'t contain more than 2 vowels)</string>
     <string name="incorrect_already_guessed">Incorrect! (You already guessed this word)</string>
     <string name="incorrect_word">Incorrect! (Not a valid word)</string>
+    <string name="new_game">New Game</string>
+    <string name="clear">Clear</string>
+    <string name="submit">Submit</string>
+    <string name="hint">Click a Letter to Get Started</string>
+    <string name="not_connected">You may only select connected letters</string>
 </resources>

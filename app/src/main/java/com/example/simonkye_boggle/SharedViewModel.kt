@@ -1,13 +1,11 @@
 package com.example.simonkye_boggle
 
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class SharedViewModel : ViewModel() {
-    private val _word = MutableLiveData<String>()
-    val word: LiveData<String> = _word
-
     private val _score = MutableLiveData<Int>()
     val score: LiveData<Int> = _score
 
@@ -22,6 +20,7 @@ class SharedViewModel : ViewModel() {
 
     private val _generatedWords = MutableLiveData<Set<String>>()
     val generatedWords: LiveData<Set<String>> = _generatedWords
+
 
     init {
         generateNewBoard()
@@ -43,10 +42,6 @@ class SharedViewModel : ViewModel() {
         _boardState.value = state
     }
 
-    fun setWord(word: String) {
-        _word.value = word
-    }
-
     fun generateNewBoard() {
         val alphabet = ('A'..'Z').toList()
         val newBoard = Array(4) { Array(4) { "" } }
@@ -64,24 +59,21 @@ class SharedViewModel : ViewModel() {
         _score.value = 0
     }
 
-    fun updateScore(word: String, isCorrect: Boolean) {
-        var currScore = _score.value ?: 0
+    fun updateScore(word: String, isCorrect: Boolean): Pair<Int, Boolean> {
+        var scoreChange = 0
         if (isCorrect) {
             val consonants = word.count { it in "BCDFGHJKLMNPQRSTVWXYZ" }
             val vowels = word.count { it in "AEIOU" }
             val specialConsonants = word.count { it in "SZPXQ" }
-            var points = consonants + (vowels * 5)
+            scoreChange = consonants + (vowels * 5)
             if (specialConsonants > 0) {
-                points *= 2
+                scoreChange *= 2
             }
-            currScore += points
         } else {
-            currScore -= 10
+            scoreChange = -10
         }
-        if (currScore >= 0) {
-            _score.value = currScore
-        } else {
-            _score.value = 0
-        }
+        val newScore = (_score.value ?: 0) + scoreChange
+        _score.value = newScore.coerceAtLeast(0)
+        return Pair(scoreChange, isCorrect)
     }
 }
