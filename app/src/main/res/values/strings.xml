@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">SimonKye-Boggle</string>
+    <string name="score">Score: %1$d</string>
+    <string name="incorrect_length">Incorrect! (Isn\'t longer than 4 characters)</string>
+    <string name="incorrect_vowels">Incorrect! (Doesn\'t contain more than 2 vowels)</string>
+    <string name="incorrect_already_guessed">Incorrect! (You already guessed this word)</string>
+    <string name="incorrect_word">Incorrect! (Not a valid word)</string>
 </resources>

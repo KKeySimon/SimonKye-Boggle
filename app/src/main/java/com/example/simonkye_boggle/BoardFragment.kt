@@ -18,6 +18,7 @@ class BoardFragment : Fragment() {
     private var prevButton: Button? = null
     private val currWord = mutableListOf<Char>()
     private val generatedWords = mutableSetOf<String>()
+    private val sharedViewModel : SharedViewModel by activityViewModels()
 
     private val binding
         get() = checkNotNull(_binding) {
@@ -30,7 +31,7 @@ class BoardFragment : Fragment() {
     ): View? {
         _binding =
             FragmentBoggleBoardBinding.inflate(layoutInflater, container, false)
-        val sharedViewModel : SharedViewModel by activityViewModels()
+
         binding.apply {
             buttonArray = arrayOf(
                 arrayOf(button1, button2, button3, button4),
@@ -42,25 +43,57 @@ class BoardFragment : Fragment() {
                 clear()
             }
             submitButton.setOnClickListener {
+                val s = currWord.joinToString("")
                 if (checkAnswer()) {
-                    sharedViewModel.setWord(currWord.joinToString(""))
+                    sharedViewModel.setWord(s)
+                    sharedViewModel.updateScore(s, true)
                     Toast.makeText(requireContext(), "Correct!", Toast.LENGTH_SHORT).show()
                 } else {
                     sharedViewModel.setWord("-1")
+                    sharedViewModel.updateScore("-1", false)
                 }
                 clear()
             }
         }
 
-        val alphabet = ('A'..'Z').toList()
+        val currentWord = sharedViewModel.currentWord.value
+        if (currentWord != null) {
+            currWord.clear()
+            currWord.addAll(currentWord.toList())
+            binding.currentText.text = currentWord
+        }
+
+        sharedViewModel.boardState.observe(viewLifecycleOwner) { state ->
+            for (i in 0 until 4) {
+                for (j in 0 until 4) {
+                    buttonArray[i][j].text = state[i][j]
+                }
+            }
+        }
+
+        sharedViewModel.buttonStates.observe(viewLifecycleOwner) { states ->
+            if (states != null) {
+                for (i in 0 until 4) {
+                    for (j in 0 until 4) {
+                        buttonArray[i][j].isEnabled = states[i][j]
+                    }
+                }
+            }
+        }
+
+        val savedGeneratedWords = sharedViewModel.generatedWords.value
+        if (savedGeneratedWords != null) {
+            generatedWords.clear()
+            generatedWords.addAll(savedGeneratedWords)
+        }
+
+
         buttonArray.forEach { row ->
             row.forEach { button ->
-                val randomLetter = alphabet.random()
-                button.text = randomLetter.toString()
                 button.setOnClickListener {
                     if (prevButton == null) {
                         currWord.add(button.text.single())
-                        binding.currentText.text = currWord.toString()
+                        binding.currentText.text = currWord.joinToString("")
                         prevButton = button
                         button.isEnabled = false
                     } else {
@@ -79,7 +112,7 @@ class BoardFragment : Fragment() {
                             || (c == prevC - 1 && r == prevR - 1)) {
 
                             currWord.add(button.text.single())
-                            binding.currentText.text = currWord.toString()
+                            binding.currentText.text = currWord.joinToString("")
 
                             prevButton = button
                             button.isEnabled = false
@@ -100,7 +133,17 @@ class BoardFragment : Fragment() {
         }
         prevButton = null
         currWord.clear()
-        binding.currentText.text = currWord.toString()
+        binding.currentText.text = currWord.joinToString("")
+    }
+
+    private fun generateNewBoard() {
+        val alphabet = ('A'..'Z').toList()
+        buttonArray.forEach { row ->
+            row.forEach { button ->
+                val randomLetter = alphabet.random()
+                button.text = randomLetter.toString()
+            }
+        }
     }
     private fun checkAnswer() : Boolean {
         val inputStream = requireContext().assets.open("words.txt")
@@ -115,20 +158,20 @@ class BoardFragment : Fragment() {
                         generatedWords.add(inputWord)
                         return true
                     } else {
-                        Toast.makeText(requireContext(), "Incorrect! (Isn't longer than 4 characters)", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), getString(R.string.incorrect_length), Toast.LENGTH_SHORT).show()
                         return false
                     }
 
                 } else {
-                    Toast.makeText(requireContext(), "Incorrect! (Doesn't contain more than 2 vowels)", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), getString(R.string.incorrect_vowels), Toast.LENGTH_SHORT).show()
                     return false
                 }
             } else {
-                Toast.makeText(requireContext(), "Incorrect! (You already guessed this word)", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.incorrect_already_guessed), Toast.LENGTH_SHORT).show()
                 return false
             }
         } else {
-            Toast.makeText(requireContext(), "Incorrect! (Not a valid word)", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.incorrect_word), Toast.LENGTH_SHORT).show()
             return false
         }
     }
@@ -161,6 +204,26 @@ class BoardFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        val letterState = Array(4) { Array(4) { "" } }
+        for (i in 0 until 4) {
+            for (j in 0 until 4) {
+                letterState[i][j] = buttonArray[i][j].text.toString()
+            }
+        }
+        sharedViewModel.setBoardState(letterState)
+
+        val pressedState = Array(4) { Array(4) { true } }
+        for (i in 0 until 4) {
+            for (j in 0 until 4) {
+                pressedState[i][j] = buttonArray[i][j].isEnabled
+            }
+        }
+        sharedViewModel.setButtonStates(pressedState)
+
+        sharedViewModel.setCurrentWord(currWord.joinToString(""))
+
+        sharedViewModel.setGeneratedWords(generatedWords)
+
         _binding = null
     }
 }
