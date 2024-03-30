@@ -10,4 +10,5 @@
     <string name="submit">Submit</string>
     <string name="hint">Click a Letter to Get Started</string>
     <string name="not_connected">You may only select connected letters</string>
+    <string name="prompt">Enter a word then hit submit.</string>
 </resources>

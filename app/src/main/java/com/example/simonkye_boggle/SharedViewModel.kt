@@ -21,6 +21,17 @@ class SharedViewModel : ViewModel() {
     private val _generatedWords = MutableLiveData<Set<String>>()
     val generatedWords: LiveData<Set<String>> = _generatedWords
 
+    private val _newGameButtonClicked = MutableLiveData<Boolean>()
+    val newGameButtonClicked: LiveData<Boolean> = _newGameButtonClicked
+
+    fun onNewGameButtonClicked() {
+        _newGameButtonClicked.value = true
+    }
+
+    fun resetNewGameButtonState() {
+        _newGameButtonClicked.value = false
+    }
+
 
     init {
         generateNewBoard()

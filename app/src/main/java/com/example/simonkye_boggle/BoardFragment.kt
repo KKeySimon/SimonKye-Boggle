@@ -66,6 +66,14 @@ class BoardFragment : Fragment() {
             binding.currentText.text = currentWord
         }
 
+        sharedViewModel.newGameButtonClicked.observe(viewLifecycleOwner) { clicked ->
+            if (clicked) {
+                currWord.clear()
+                binding.currentText.text = ""
+                sharedViewModel.resetNewGameButtonState()
+            }
+        }
+
         sharedViewModel.boardState.observe(viewLifecycleOwner) { state ->
             for (i in 0 until 4) {
                 for (j in 0 until 4) {

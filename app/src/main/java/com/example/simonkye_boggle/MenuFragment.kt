@@ -37,6 +37,7 @@ class MenuFragment : Fragment() {
 
         binding.newGameButton.setOnClickListener {
             sharedViewModel.generateNewBoard()
+            sharedViewModel.onNewGameButtonClicked()
         }
         return binding.root
     }

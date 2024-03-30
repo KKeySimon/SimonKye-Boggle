@@ -5,6 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <TextView
+        android:id="@+id/promptText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/prompt"
+        android:textSize="20sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"/>
+
     <Button
         android:id="@+id/button1"
         android:layout_width="0dp"
@@ -12,7 +23,7 @@
         android:textSize="50sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/button2"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/promptText"
         app:layout_constraintBottom_toTopOf="@id/button5" />
 
     <Button
@@ -22,7 +33,7 @@
         android:textSize="50sp"
         app:layout_constraintStart_toEndOf="@id/button1"
         app:layout_constraintEnd_toStartOf="@id/button3"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/promptText"
         app:layout_constraintBottom_toTopOf="@id/button6" />
 
     <Button
@@ -32,7 +43,7 @@
         android:textSize="50sp"
         app:layout_constraintStart_toEndOf="@id/button2"
         app:layout_constraintEnd_toStartOf="@id/button4"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/promptText"
         app:layout_constraintBottom_toTopOf="@id/button7" />
 
     <Button
@@ -42,7 +53,7 @@
         android:textSize="50sp"
         app:layout_constraintStart_toEndOf="@id/button3"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/promptText"
         app:layout_constraintBottom_toTopOf="@id/button8" />
 
     <Button
